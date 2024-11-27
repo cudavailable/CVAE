@@ -53,7 +53,7 @@ class Decoder(nn.Module):
 		x_recon: 重建数据
 		z: 潜在向量
 	"""
-	def __init__(self, latent_dim, condition_dim, output_dim):
+	def __init__(self, latent_dim, condition_dim, input_dim):
 		super.__init__(Decoder, self)
 		self.latent_dim = latent_dim + condition_dim
 		self.dec_mlp = nn.Sequential(
@@ -61,7 +61,7 @@ class Decoder(nn.Module):
 			nn.ReLU(),
 			nn.Linear(128, 256),
 			nn.ReLU(),
-			nn.Linear(256, output_dim),
+			nn.Linear(256, input_dim),
 			nn.Sigmoid(),
 		)
 
@@ -72,15 +72,20 @@ class Decoder(nn.Module):
 		return x_recon
 
 class CVAE(nn.Module):
-	def __init__(self, input_dim, condition_dim, latent_dim, output_dim):
+	def __init__(self, input_dim, condition_dim, latent_dim):
 		# Encoder & Decoder 初始化
 		self.enc = Encoder(input_dim, condition_dim, latent_dim)
-		self.dec = Decoder(latent_dim, condition_dim, output_dim)
+		self.dec = Decoder(latent_dim, condition_dim, input_dim)
 
 	def reparameterize(self, mean, log):
 		std = torch.exp(0.5 * log)
 		eps = torch.randn_like(std)
 		return mean + std*eps
+
+	def inference(self, z, c):
+		x_recon = self.dec(z, c)
+
+		return x_recon
 
 	def forward(self, x, c):
 		m, log = self.enc(x, c)
