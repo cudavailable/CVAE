@@ -48,6 +48,8 @@ def infer(args):
 	model.eval()  # 设置模型为评估模式（如不需训练时）
 	print(f"Model loaded from {args.model_path}")
 
-	generate_images(model, device, digit=7, args=args)
+	# 根据输入的数字生成相应的10张数字图片
+	digit = int(input("请输入要生成图片的数字："))
+	generate_images(model, device, digit=digit, args=args)
 
 	pass
