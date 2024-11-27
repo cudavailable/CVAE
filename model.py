@@ -82,5 +82,9 @@ class CVAE(nn.Module):
 		eps = torch.randn_like(std)
 		return mean + std*eps
 
-	def forward(self):
-		pass
+	def forward(self, x, c):
+		m, log = self.enc(x, c)
+		z = self.reparameterize(m, log)
+		x_recon = self.dec(z, c)
+
+		return x_recon, z, m, log
