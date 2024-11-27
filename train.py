@@ -1,6 +1,5 @@
 import os
 import torch
-import argparse
 from torch import nn
 from torchvision.datasets import MNIST
 from torchvision import transforms
@@ -9,12 +8,13 @@ from torch.utils.data import DataLoader
 from model import CVAE
 from logger import Logger
 
-def main(args):
+
+def train(args):
 
 	# logger setup
 	if args.log_dir is not None and not os.path.exists(args.log_dir):
 		os.makedirs(args.log_dir)
-	logger = Logger(os.path.join(args.dir, "log.txt"))
+	logger = Logger(os.path.join(args.log_dir, "log.txt"))
 
 	# keep the best model parameters according to avg_loss
 	tracker = {"epoch" : None, "criterion" : None, "model_params" : None}
@@ -39,14 +39,12 @@ def main(args):
 
 	# model setup
 	# need to be fixed...
-	model = CVAE(input_dim=args.input_size,
-				 condition_dim=args.num_classes,
-				 latent_dim=args.latent_size).to(device)
+	model = CVAE(input_dim=args.input_size, condition_dim=args.num_classes, latent_dim=args.latent_size).to(device)
 	optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
 
 	# Training
 	model.train()
-	for epoch in args.epochs:
+	for epoch in range(args.epochs):
 
 		epoch_loss = 0
 		for x, y in dataset:
@@ -79,22 +77,3 @@ def main(args):
 		logger.write(f"model with the best performance saved to {args.model_path}.")
 	# close
 	logger.close()
-
-
-
-if __name__ == "__main__":
-	parser = argparse.ArgumentParser()
-	parser.add_argument("--num_classes", type=int, default=10)
-	parser.add_argument("--epochs", type=int, default=10)
-	parser.add_argument("--lr", type=float, default=0.001)
-	parser.add_argument("--batch_size", type=int, default=64)
-	parser.add_argument("--input_size", type=int, default=28*28)
-	parser.add_argument("--latent_size", type=int, default=2)
-	# parser.add_argument("--print_every", type=int, default=100)
-	parser.add_argument("--data_dir", type=str, default="./data")
-	parser.add_argument("--log_dir", type=str, default="./log")
-	parser.add_argument("--model_path", type=str, default="cvae_model.pth")
-
-	args = parser.parse_args()
-
-	main(args)

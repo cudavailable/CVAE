@@ -16,8 +16,8 @@ class Encoder(nn.Module):
 		m: 重采样之后的均值
 		log: 重采样之后的方差的对数
 	"""
-	def __int__(self, input_dim, condition_dim, latent_dim):
-		super.__init__(Encoder, self)
+	def __init__(self, input_dim, condition_dim, latent_dim):
+		super(Encoder, self).__init__()
 		self.input_dim = input_dim + condition_dim
 		self.enc_mlp = nn.Sequential(
 			nn.Linear(self.input_dim, 256),
@@ -29,7 +29,7 @@ class Encoder(nn.Module):
 		self.log_layer = nn.Linear(128, latent_dim)
 
 	def forward(self, x, c):
-		x = torch.concatenate([x, c], dim=-1) # 拼接图片数据向量和条件对应的独热编码
+		x = torch.cat([x, c], dim=-1) # 拼接图片数据向量和条件对应的独热编码
 		z = self.enc_mlp(x)
 
 		# 重参数化
@@ -54,7 +54,7 @@ class Decoder(nn.Module):
 		z: 潜在向量
 	"""
 	def __init__(self, latent_dim, condition_dim, input_dim):
-		super.__init__(Decoder, self)
+		super(Decoder, self).__init__()
 		self.latent_dim = latent_dim + condition_dim
 		self.dec_mlp = nn.Sequential(
 			nn.Linear(self.latent_dim, 128),
@@ -66,7 +66,7 @@ class Decoder(nn.Module):
 		)
 
 	def forward(self, z, c):
-		z = torch.concatenate([z, c], dim=-1) # 拼接潜在向量和条件对应的独热编码
+		z = torch.cat([z, c], dim=-1) # 拼接潜在向量和条件对应的独热编码
 		x_recon = self.dec_mlp(z)
 
 		return x_recon
@@ -74,6 +74,7 @@ class Decoder(nn.Module):
 class CVAE(nn.Module):
 	def __init__(self, input_dim, condition_dim, latent_dim):
 		# Encoder & Decoder 初始化
+		super(CVAE, self).__init__()
 		self.enc = Encoder(input_dim, condition_dim, latent_dim)
 		self.dec = Decoder(latent_dim, condition_dim, input_dim)
 

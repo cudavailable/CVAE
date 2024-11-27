@@ -1,0 +1,17 @@
+we're using :: cpu
+
+Epoch 1/10, Loss: 165.850561
+Epoch 2/10, Loss: 140.053915
+Epoch 3/10, Loss: 136.381567
+Epoch 4/10, Loss: 134.479894
+Epoch 5/10, Loss: 133.239557
+Epoch 6/10, Loss: 132.393689
+Epoch 7/10, Loss: 131.676391
+Epoch 8/10, Loss: 131.195289
+Epoch 9/10, Loss: 130.724670
+Epoch 10/10, Loss: 130.375974
+
+
+Training completed
+
+Best Epoch: 10, average loss:130.37597427693512
