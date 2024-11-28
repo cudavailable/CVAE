@@ -17,7 +17,7 @@ def train(args):
 	logger = Logger(os.path.join(args.log_dir, "log.txt"))
 
 	# keep the best model parameters according to avg_loss
-	tracker = {"epoch" : None, "criterion" : None, "model_params" : None}
+	tracker = {"epoch" : None, "criterion" : None}
 
 	# device setup
 	device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -38,7 +38,6 @@ def train(args):
 		return (bce + kl) / x.size(0)
 
 	# model setup
-	# need to be fixed...
 	model = CVAE(input_dim=args.input_size, condition_dim=args.num_classes, latent_dim=args.latent_size).to(device)
 	optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
 
@@ -49,7 +48,7 @@ def train(args):
 		epoch_loss = 0
 		for x, y in dataset:
 			x, y = x.to(device), y.to(device)
-			c = nn.functional.one_hot(y, num_classes=args.num_classes).float() # one-hot encoding
+			c = nn.functional.one_hot(y, num_classes=args.num_classes).float().to(device) # one-hot encoding
 
 			# update gradients
 			optimizer.zero_grad()
